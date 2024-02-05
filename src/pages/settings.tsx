@@ -15,24 +15,8 @@ const SettingPage = () => {
     Notice.error(err?.message || err.toString());
   };
 
-  const toGithubRepo = useLockFn(() => {
-    return openWebUrl("https://github.com/clash-verge-rev/clash-verge-rev");
-  });
-
   return (
-    <BasePage
-      title={t("Settings")}
-      header={
-        <IconButton
-          size="small"
-          color="inherit"
-          title="@clash-verge-rev/clash-verge-rev"
-          onClick={toGithubRepo}
-        >
-          <GitHub fontSize="inherit" />
-        </IconButton>
-      }
-    >
+    <BasePage title={t("Settings")}>
       <Grid container spacing={{ xs: 1, lg: 1 }}>
         <Grid item xs={12} md={6}>
           <Box sx={{ borderRadius: 1, boxShadow: 2, marginBottom: 1 }}>
