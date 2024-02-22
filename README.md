@@ -35,8 +35,6 @@ Notes: If you could not start the app on Windows, please check that you have [We
 - Built-in support [Clash.Meta(mihomo)](https://github.com/MetaCubeX/mihomo) core.
 - System proxy setting and guard.
 
-#### TG Group: [@clash_verge_rev](https://t.me/clash_verge_rev)
-
 ## Preview
 
 ![preview](./docs/preview.gif)
