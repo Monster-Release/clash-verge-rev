@@ -75,7 +75,7 @@
   "Allow Lan": "局域网连接",
   "IPv6": "IPv6",
   "Log Level": "日志等级",
-  "Mixed Port": "端口设置",
+  "Port Config": "端口设置",
   "Random Port": "随机端口",
   "After restart to take effect": "重启后生效",
   "External": "外部控制",
@@ -152,6 +152,7 @@
   "Enable Builtin Enhanced": "开启内建增强功能",
   "Proxy Layout Column": "代理页布局列数",
   "Default Latency Test": "默认测试链接",
+  "Default Latency Timeout": "测试超时时间",
 
   "Auto Log Clean": "自动清理日志",
   "Never Clean": "不清理",
@@ -159,5 +160,17 @@
   "Retain 30 Days": "保留30天",
   "Retain 90 Days": "保留90天",
 
-  "Portable Updater Error": "便携版不支持应用内更新，请手动下载替换"
+  "Stack": "Tun 模式堆栈",
+  "Device": "Tun 网卡名称",
+  "Auto Route": "自动设置全局路由",
+  "Strict Route": "严格路由",
+  "Auto Detect Interface": "自动选择流量出口接口",
+  "DNS Hijack": "DNS 劫持",
+  "MTU": "最大传输单元",
+  "Reset to Default": "重置为默认值",
+
+  "Portable Updater Error": "便携版不支持应用内更新，请手动下载替换",
+  "Tun Mode Info Windows": "Tun模式需要授予内核相关权限，使用前请先开启服务模式",
+  "Tun Mode Info Unix": "Tun模式需要授予内核相关权限，使用前请先在内核设置中给内核授权",
+  "System and Mixed Can Only be Used in Service Mode": "System和Mixed只能在服务模式下使用"
 }

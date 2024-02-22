@@ -90,8 +90,9 @@ export async function getClashInfo() {
   return invoke<IClashInfo | null>("get_clash_info");
 }
 
+// Get runtime config which controlled by verge
 export async function getRuntimeConfig() {
-  return invoke<any | null>("get_runtime_config");
+  return invoke<IConfigData | null>("get_runtime_config");
 }
 
 export async function getRuntimeYaml() {
@@ -160,9 +161,17 @@ export async function openWebUrl(url: string) {
   return invoke<void>("open_web_url", { url });
 }
 
-export async function cmdGetProxyDelay(name: string, url?: string) {
+export async function cmdGetProxyDelay(
+  name: string,
+  timeout: number,
+  url?: string
+) {
   name = encodeURIComponent(name);
-  return invoke<{ delay: number }>("clash_api_get_proxy_delay", { name, url });
+  return invoke<{ delay: number }>("clash_api_get_proxy_delay", {
+    name,
+    url,
+    timeout,
+  });
 }
 
 export async function cmdTestDelay(url: string) {

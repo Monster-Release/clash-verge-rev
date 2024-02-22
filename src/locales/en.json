@@ -75,7 +75,7 @@
   "Allow Lan": "Allow Lan",
   "IPv6": "IPv6",
   "Log Level": "Log Level",
-  "Mixed Port": "Mixed Port",
+  "Port Config": "Port Config",
   "Random Port": "Random Port",
   "After restart to take effect": "After restart to take effect",
   "External": "External",
@@ -152,6 +152,7 @@
   "Enable Builtin Enhanced": "Enable Builtin Enhanced",
   "Proxy Layout Column": "Proxy Layout Column",
   "Default Latency Test": "Default Latency Test",
+  "Defaule Latency Timeout": "Defaule Latency Timeout",
 
   "Auto Log Clean": "Auto Log Clean",
   "Never Clean": "Never Clean",
@@ -159,5 +160,16 @@
   "Retain 30 Days": "Retain 30 Days",
   "Retain 90 Days": "Retain 90 Days",
 
-  "Portable Updater Error": "The portable version does not support in-app updates. Please manually download and replace it"
+  "Stack": "Tun Stack",
+  "Device": "Device Name",
+  "Auto Route": "Auto Route",
+  "Strict Route": "Strict Route",
+  "Auto Detect Interface": "Auto Detect Interface",
+  "DNS Hijack": "DNS Hijack",
+  "MTU": "Max Transmission Unit",
+
+  "Portable Updater Error": "The portable version does not support in-app updates. Please manually download and replace it",
+  "Tun Mode Info Windows": "The Tun mode requires granting core-related permissions. Please enable service mode before using it",
+  "Tun Mode Info Unix": "The Tun mode requires granting core-related permissions. Before using it, please authorize the core in the core settings",
+  "System and Mixed Can Only be Used in Service Mode": "System and Mixed Can Only be Used in Service Mode"
 }

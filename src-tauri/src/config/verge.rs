@@ -81,6 +81,9 @@ pub struct IVerge {
     /// 默认的延迟测试连接
     pub default_latency_test: Option<String>,
 
+    /// 默认的延迟测试超时时间
+    pub default_latency_timeout: Option<i32>,
+
     /// 是否使用内部的脚本支持，默认为真
     pub enable_builtin_enhanced: Option<bool>,
 
@@ -97,6 +100,10 @@ pub struct IVerge {
     /// window size and position
     #[serde(skip_serializing_if = "Option::is_none")]
     pub window_size_position: Option<Vec<f64>>,
+
+    /// window size and position
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub window_is_maximized: Option<bool>,
 
     /// 是否启用随机端口
     pub enable_random_port: Option<bool>,
@@ -218,11 +225,13 @@ impl IVerge {
 
         patch!(auto_close_connection);
         patch!(default_latency_test);
+        patch!(default_latency_timeout);
         patch!(enable_builtin_enhanced);
         patch!(proxy_layout_column);
         patch!(test_list);
         patch!(auto_log_clean);
         patch!(window_size_position);
+        patch!(window_is_maximized);
     }
 
     /// 在初始化前尝试拿到单例端口的值

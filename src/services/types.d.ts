@@ -32,6 +32,15 @@ interface IConfigData {
   "tproxy-port": number;
   "external-controller": string;
   secret: string;
+  tun: {
+    stack: string;
+    device: string;
+    "auto-route": boolean;
+    "auto-detect-interface": boolean;
+    "dns-hijack": string[];
+    "strict-route": boolean;
+    mtu: number;
+  };
 }
 
 interface IRuleItem {
@@ -219,6 +228,7 @@ interface IVergeConfig {
   };
   auto_close_connection?: boolean;
   default_latency_test?: string;
+  default_latency_timeout?: number;
   enable_builtin_enhanced?: boolean;
   auto_log_clean?: 0 | 1 | 2 | 3;
   proxy_layout_column?: number;
