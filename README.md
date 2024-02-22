@@ -17,8 +17,6 @@ A Clash Meta GUI based on <a href="https://github.com/tauri-apps/tauri">Tauri</a
 - Built-in support [Clash.Meta(mihomo)](https://github.com/MetaCubeX/mihomo) core.
 - System proxy setting and guard.
 
-#### TG Group: [@clash_verge_rev](https://t.me/clash_verge_rev)
-
 ## Preview
 
 ![preview](./docs/preview.gif)
