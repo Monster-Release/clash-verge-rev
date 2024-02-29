@@ -65,6 +65,9 @@
   "Descriptions": "Описания",
   "Subscription URL": "URL подписки",
   "Update Interval": "Интервал обновления",
+  "Use System Proxy": "Использовать системный прокси для обновления",
+  "Use Clash Proxy": "Использовать прокси Clash для обновления",
+  "Accept Invalid Certs (Danger)": "Принимать недействительные сертификаты (Опасно)",
 
   "Settings": "Настройки",
   "Clash Setting": "Настройки Clash",
@@ -118,17 +121,12 @@
   "Cancel": "Отмена",
   "Exit": "Выход",
 
-  "open_dashboard": "Open Dashboard",
+  "open_or_close_dashboard": "Open/Close Dashboard",
   "clash_mode_rule": "Режим правил",
   "clash_mode_global": "Глобальный режим",
   "clash_mode_direct": "Прямой режим",
-  "clash_mode_script": "Скриптовый режим",
-  "toggle_system_proxy": "Переключить режим системного прокси",
-  "enable_system_proxy": "Включить системный прокси",
-  "disable_system_proxy": "Отключить системный прокси",
-  "toggle_tun_mode": "Переключить режим туннеля",
-  "enable_tun_mode": "Включить режим туннеля",
-  "disable_tun_mode": "Отключить режим туннеля",
+  "toggle_system_proxy": "Включить/Отключить системный прокси",
+  "toggle_tun_mode": "Включить/Отключить режим туннеля",
 
   "Portable Updater Error": "Портативная версия не поддерживает обновление внутри приложения, пожалуйста, скачайте и замените вручную"
 }

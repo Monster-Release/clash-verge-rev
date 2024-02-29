@@ -10,13 +10,19 @@ use crate::log_err;
 use crate::utils::resolve;
 use anyhow::{bail, Result};
 use serde_yaml::{Mapping, Value};
-use tauri::{AppHandle, ClipboardManager};
+use tauri::{AppHandle, ClipboardManager, Manager};
 
 // 打开面板
-pub fn open_dashboard() {
+pub fn open_or_close_dashboard() {
     let handle = handle::Handle::global();
     let app_handle = handle.app_handle.lock();
     if let Some(app_handle) = app_handle.as_ref() {
+        if let Some(window) = app_handle.get_window("main") {
+            if let Ok(true) = window.is_focused() {
+                let _ = window.close();
+                return;
+            }
+        }
         resolve::create_window(app_handle);
     }
 }
@@ -78,36 +84,6 @@ pub fn toggle_system_proxy() {
     });
 }
 
-// 打开系统代理
-pub fn enable_system_proxy() {
-    tauri::async_runtime::spawn(async {
-        match patch_verge(IVerge {
-            enable_system_proxy: Some(true),
-            ..IVerge::default()
-        })
-        .await
-        {
-            Ok(_) => handle::Handle::refresh_verge(),
-            Err(err) => log::error!(target: "app", "{err}"),
-        }
-    });
-}
-
-// 关闭系统代理
-pub fn disable_system_proxy() {
-    tauri::async_runtime::spawn(async {
-        match patch_verge(IVerge {
-            enable_system_proxy: Some(false),
-            ..IVerge::default()
-        })
-        .await
-        {
-            Ok(_) => handle::Handle::refresh_verge(),
-            Err(err) => log::error!(target: "app", "{err}"),
-        }
-    });
-}
-
 // 切换tun模式
 pub fn toggle_tun_mode() {
     let enable = Config::verge().data().enable_tun_mode;
@@ -116,36 +92,6 @@ pub fn toggle_tun_mode() {
     tauri::async_runtime::spawn(async move {
         match patch_verge(IVerge {
             enable_tun_mode: Some(!enable),
-            ..IVerge::default()
-        })
-        .await
-        {
-            Ok(_) => handle::Handle::refresh_verge(),
-            Err(err) => log::error!(target: "app", "{err}"),
-        }
-    });
-}
-
-// 打开tun模式
-pub fn enable_tun_mode() {
-    tauri::async_runtime::spawn(async {
-        match patch_verge(IVerge {
-            enable_tun_mode: Some(true),
-            ..IVerge::default()
-        })
-        .await
-        {
-            Ok(_) => handle::Handle::refresh_verge(),
-            Err(err) => log::error!(target: "app", "{err}"),
-        }
-    });
-}
-
-// 关闭tun模式
-pub fn disable_tun_mode() {
-    tauri::async_runtime::spawn(async {
-        match patch_verge(IVerge {
-            enable_tun_mode: Some(false),
             ..IVerge::default()
         })
         .await
@@ -230,6 +176,9 @@ pub async fn patch_verge(patch: IVerge) -> Result<()> {
     let proxy_bypass = patch.system_proxy_bypass;
     let language = patch.language;
     let port = patch.verge_mixed_port;
+    let common_tray_icon = patch.common_tray_icon;
+    let sysproxy_tray_icon = patch.sysproxy_tray_icon;
+    let tun_tray_icon = patch.tun_tray_icon;
 
     match {
         #[cfg(target_os = "windows")]
@@ -269,7 +218,12 @@ pub async fn patch_verge(patch: IVerge) -> Result<()> {
 
         if language.is_some() {
             handle::Handle::update_systray()?;
-        } else if system_proxy.or(tun_mode).is_some() {
+        } else if system_proxy.is_some()
+            || tun_mode.is_some()
+            || common_tray_icon.is_some()
+            || sysproxy_tray_icon.is_some()
+            || tun_tray_icon.is_some()
+        {
             handle::Handle::update_systray_part()?;
         }
 

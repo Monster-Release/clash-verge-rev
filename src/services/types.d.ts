@@ -173,6 +173,7 @@ interface IProfileOption {
   with_proxy?: boolean;
   self_proxy?: boolean;
   update_interval?: number;
+  danger_accept_invalid_certs?: boolean;
 }
 
 interface IProfilesConfig {
@@ -200,6 +201,10 @@ interface IVergeConfig {
   theme_mode?: "light" | "dark" | "system";
   traffic_graph?: boolean;
   enable_memory_usage?: boolean;
+  enable_group_icon?: boolean;
+  common_tray_icon?: boolean;
+  sysproxy_tray_icon?: boolean;
+  tun_tray_icon?: boolean;
   enable_tun_mode?: boolean;
   enable_auto_launch?: boolean;
   enable_service_mode?: boolean;

@@ -1,4 +1,9 @@
-use crate::{cmds, config::Config, feat, utils::resolve};
+use crate::{
+    cmds,
+    config::Config,
+    feat,
+    utils::{dirs, resolve},
+};
 use anyhow::Result;
 use tauri::{
     api, AppHandle, CustomMenuItem, Manager, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
@@ -129,26 +134,47 @@ impl Tray {
         let verge = verge.latest();
         let system_proxy = verge.enable_system_proxy.as_ref().unwrap_or(&false);
         let tun_mode = verge.enable_tun_mode.as_ref().unwrap_or(&false);
+        let common_tray_icon = verge.common_tray_icon.as_ref().unwrap_or(&false);
+        let sysproxy_tray_icon = verge.sysproxy_tray_icon.as_ref().unwrap_or(&false);
+        let tun_tray_icon = verge.tun_tray_icon.as_ref().unwrap_or(&false);
 
         let mut indication_icon = if *system_proxy {
             #[cfg(not(target_os = "macos"))]
-            let icon = include_bytes!("../../icons/tray-icon-sys.png").to_vec();
+            let mut icon = include_bytes!("../../icons/tray-icon-sys.png").to_vec();
             #[cfg(target_os = "macos")]
-            let icon = include_bytes!("../../icons/mac-tray-icon-sys.png").to_vec();
+            let mut icon = include_bytes!("../../icons/mac-tray-icon-sys.png").to_vec();
+            if *sysproxy_tray_icon {
+                let path = dirs::app_home_dir()?.join("icons").join("sysproxy.png");
+                if path.exists() {
+                    icon = std::fs::read(path).unwrap();
+                }
+            }
             icon
         } else {
             #[cfg(not(target_os = "macos"))]
-            let icon = include_bytes!("../../icons/tray-icon.png").to_vec();
+            let mut icon = include_bytes!("../../icons/tray-icon.png").to_vec();
             #[cfg(target_os = "macos")]
-            let icon = include_bytes!("../../icons/mac-tray-icon.png").to_vec();
+            let mut icon = include_bytes!("../../icons/mac-tray-icon.png").to_vec();
+            if *common_tray_icon {
+                let path = dirs::app_home_dir()?.join("icons").join("common.png");
+                if path.exists() {
+                    icon = std::fs::read(path).unwrap();
+                }
+            }
             icon
         };
 
         if *tun_mode {
             #[cfg(not(target_os = "macos"))]
-            let icon = include_bytes!("../../icons/tray-icon-tun.png").to_vec();
+            let mut icon = include_bytes!("../../icons/tray-icon-tun.png").to_vec();
             #[cfg(target_os = "macos")]
-            let icon = include_bytes!("../../icons/mac-tray-icon-tun.png").to_vec();
+            let mut icon = include_bytes!("../../icons/mac-tray-icon-tun.png").to_vec();
+            if *tun_tray_icon {
+                let path = dirs::app_home_dir()?.join("icons").join("tun.png");
+                if path.exists() {
+                    icon = std::fs::read(path).unwrap();
+                }
+            }
             indication_icon = icon
         }
 

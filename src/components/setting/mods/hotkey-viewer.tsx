@@ -14,17 +14,12 @@ const ItemWrapper = styled("div")`
 `;
 
 const HOTKEY_FUNC = [
-  "open_dashboard",
+  "open_or_close_dashboard",
   "clash_mode_rule",
   "clash_mode_global",
   "clash_mode_direct",
-  "clash_mode_script",
   "toggle_system_proxy",
-  "enable_system_proxy",
-  "disable_system_proxy",
   "toggle_tun_mode",
-  "enable_tun_mode",
-  "disable_tun_mode",
 ];
 
 export const HotkeyViewer = forwardRef<DialogRef>((props, ref) => {
