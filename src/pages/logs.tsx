@@ -5,9 +5,9 @@ import {
   Button,
   IconButton,
   MenuItem,
-  Paper,
   Select,
-  TextField,
+  SelectProps,
+  styled,
 } from "@mui/material";
 import { Virtuoso } from "react-virtuoso";
 import { useTranslation } from "react-i18next";
@@ -18,12 +18,33 @@ import {
 import { atomEnableLog, atomLogData } from "@/services/states";
 import { BaseEmpty, BasePage } from "@/components/base";
 import LogItem from "@/components/log/log-item";
+import { useCustomTheme } from "@/components/layout/use-custom-theme";
+import { BaseStyledTextField } from "@/components/base/base-styled-text-field";
+
+const StyledSelect = styled((props: SelectProps<string>) => {
+  return (
+    <Select
+      size="small"
+      autoComplete="off"
+      sx={{
+        width: 120,
+        height: 33.375,
+        mr: 1,
+        '[role="button"]': { py: 0.65 },
+      }}
+      {...props}
+    />
+  );
+})(({ theme }) => ({
+  background: theme.palette.mode === "light" ? "#fff" : undefined,
+}));
 
 const LogPage = () => {
   const { t } = useTranslation();
   const [logData, setLogData] = useRecoilState(atomLogData);
   const [enableLog, setEnableLog] = useRecoilState(atomEnableLog);
-
+  const { theme } = useCustomTheme();
+  const isDark = theme.palette.mode === "dark";
   const [logState, setLogState] = useState("all");
   const [filterText, setFilterText] = useState("");
 
@@ -42,7 +63,7 @@ const LogPage = () => {
       title={t("Logs")}
       contentStyle={{ height: "100%" }}
       header={
-        <Box sx={{ mt: 1, display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <IconButton
             size="small"
             color="inherit"
@@ -75,39 +96,30 @@ const LogPage = () => {
           alignItems: "center",
         }}
       >
-        <Select
-          size="small"
-          autoComplete="off"
+        <StyledSelect
           value={logState}
           onChange={(e) => setLogState(e.target.value)}
-          sx={{
-            width: 120,
-            height: 33.375,
-            mr: 1,
-            '[role="button"]': { py: 0.65 },
-          }}
         >
           <MenuItem value="all">ALL</MenuItem>
           <MenuItem value="inf">INFO</MenuItem>
           <MenuItem value="warn">WARN</MenuItem>
           <MenuItem value="err">ERROR</MenuItem>
-        </Select>
+        </StyledSelect>
 
-        <TextField
-          hiddenLabel
-          fullWidth
-          size="small"
-          autoComplete="off"
-          spellCheck="false"
-          variant="outlined"
-          placeholder={t("Filter conditions")}
+        <BaseStyledTextField
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
-          sx={{ input: { py: 0.65, px: 1.25 } }}
         />
       </Box>
 
-      <Box height="calc(100% - 50px)">
+      <Box
+        height="calc(100% - 65px)"
+        sx={{
+          margin: "10px",
+          borderRadius: "8px",
+          bgcolor: isDark ? "#282a36" : "#ffffff",
+        }}
+      >
         {filterLogs.length > 0 ? (
           <Virtuoso
             initialTopMostItemIndex={999}

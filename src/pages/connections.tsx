@@ -1,14 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLockFn } from "ahooks";
-import {
-  Box,
-  Button,
-  IconButton,
-  MenuItem,
-  Paper,
-  Select,
-  TextField,
-} from "@mui/material";
+import { Box, Button, IconButton, MenuItem, Select } from "@mui/material";
 import { useRecoilState } from "recoil";
 import { Virtuoso } from "react-virtuoso";
 import { useTranslation } from "react-i18next";
@@ -25,6 +17,8 @@ import {
   ConnectionDetailRef,
 } from "@/components/connection/connection-detail";
 import parseTraffic from "@/utils/parse-traffic";
+import { useCustomTheme } from "@/components/layout/use-custom-theme";
+import { BaseStyledTextField } from "@/components/base/base-styled-text-field";
 
 const initConn = { uploadTotal: 0, downloadTotal: 0, connections: [] };
 
@@ -33,7 +27,8 @@ type OrderFunc = (list: IConnectionsItem[]) => IConnectionsItem[];
 const ConnectionsPage = () => {
   const { t, i18n } = useTranslation();
   const { clashInfo } = useClashInfo();
-
+  const { theme } = useCustomTheme();
+  const isDark = theme.palette.mode === "dark";
   const [filterText, setFilterText] = useState("");
   const [curOrderOpt, setOrderOpt] = useState("Default");
   const [connData, setConnData] = useState<IConnections>(initConn);
@@ -106,7 +101,6 @@ const ConnectionsPage = () => {
 
   useEffect(() => {
     if (!clashInfo) return;
-
     const { server = "", secret = "" } = clashInfo;
     connect(`ws://${server}/connections?token=${encodeURIComponent(secret)}`);
 
@@ -125,7 +119,7 @@ const ConnectionsPage = () => {
       title={t("Connections")}
       contentStyle={{ height: "100%" }}
       header={
-        <Box sx={{ mt: 1, display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Box sx={{ mx: 1 }}>Download: {parseTraffic(download)}</Box>
           <Box sx={{ mx: 1 }}>Upload: {parseTraffic(upload)}</Box>
           <IconButton
@@ -184,21 +178,21 @@ const ConnectionsPage = () => {
           </Select>
         )}
 
-        <TextField
-          hiddenLabel
-          fullWidth
-          size="small"
-          autoComplete="off"
-          spellCheck="false"
-          variant="outlined"
-          placeholder={t("Filter conditions")}
+        <BaseStyledTextField
           value={filterText}
           onChange={(e) => setFilterText(e.target.value)}
-          sx={{ input: { py: 0.65, px: 1.25 } }}
         />
       </Box>
 
-      <Box height="calc(100% - 50px)" sx={{ userSelect: "text" }}>
+      <Box
+        height="calc(100% - 65px)"
+        sx={{
+          userSelect: "text",
+          margin: "10px",
+          borderRadius: "8px",
+          bgcolor: isDark ? "#282a36" : "#ffffff",
+        }}
+      >
         {filterConn.length === 0 ? (
           <BaseEmpty text="No Connections" />
         ) : isTableLayout ? (

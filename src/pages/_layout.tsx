@@ -4,16 +4,18 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { SWRConfig, mutate } from "swr";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Route, Routes, useLocation } from "react-router-dom";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { alpha, List, Paper, ThemeProvider } from "@mui/material";
+import { useLocation, useRoutes } from "react-router-dom";
+import { List, Paper, ThemeProvider } from "@mui/material";
 import { listen } from "@tauri-apps/api/event";
 import { appWindow } from "@tauri-apps/api/window";
 import { routers } from "./_routers";
 import { getAxios } from "@/services/api";
 import { useVerge } from "@/hooks/use-verge";
 import LogoSvg from "@/assets/image/logo.svg?react";
-import { BaseErrorBoundary, Notice } from "@/components/base";
+import LogoSvg_dark from "@/assets/image/logo_dark.svg?react";
+import { atomThemeMode } from "@/services/states";
+import { useRecoilState } from "recoil";
+import { Notice } from "@/components/base";
 import { LayoutItem } from "@/components/layout/layout-item";
 import { LayoutControl } from "@/components/layout/layout-control";
 import { LayoutTraffic } from "@/components/layout/layout-traffic";
@@ -24,6 +26,8 @@ import "dayjs/locale/ru";
 import "dayjs/locale/zh-cn";
 import { getPortableFlag } from "@/services/cmds";
 import { useNavigate } from "react-router-dom";
+import React from "react";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 export let portableFlag = false;
 
 dayjs.extend(relativeTime);
@@ -31,14 +35,17 @@ dayjs.extend(relativeTime);
 const OS = getSystem();
 
 const Layout = () => {
+  const [mode] = useRecoilState(atomThemeMode);
+  const isDark = mode === "light" ? false : true;
   const { t } = useTranslation();
-
   const { theme } = useCustomTheme();
 
   const { verge } = useVerge();
   const { language, start_page } = verge || {};
   const navigate = useNavigate();
   const location = useLocation();
+  const routersEles = useRoutes(routers);
+  if (!routersEles) return null;
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
@@ -100,9 +107,6 @@ const Layout = () => {
           square
           elevation={0}
           className={`${OS} layout`}
-          onPointerDown={(e: any) => {
-            if (e.target?.dataset?.windrag) appWindow.startDragging();
-          }}
           onContextMenu={(e) => {
             // only prevent it on Windows
             const validList = ["input", "textarea"];
@@ -121,34 +125,50 @@ const Layout = () => {
             ({ palette }) => ({
               bgcolor: palette.background.paper,
             }),
+            OS === "linux"
+              ? {
+                  borderRadius: "8px",
+                  border: "2px solid var(--divider-color)",
+                  width: "calc(100vw - 4px)",
+                  height: "calc(100vh - 4px)",
+                }
+              : {},
           ]}
         >
-          <div className="layout__left" data-windrag>
-            <div className="the-logo" data-windrag>
-              <LogoSvg />
-
-              {!portableFlag && <UpdateButton className="the-newbtn" />}
+          <div className="layout__left">
+            <div className="the-logo" data-tauri-drag-region="true">
+              {!isDark ? <LogoSvg /> : <LogoSvg_dark />}
+              {<UpdateButton className="the-newbtn" />}
             </div>
 
             <List className="the-menu">
               {routers.map((router) => (
-                <LayoutItem key={router.label} to={router.link}>
+                <LayoutItem
+                  key={router.label}
+                  to={router.path}
+                  icon={router.icon}
+                >
                   {t(router.label)}
                 </LayoutItem>
               ))}
             </List>
 
-            <div className="the-traffic" data-windrag>
+            <div className="the-traffic">
               <LayoutTraffic />
             </div>
           </div>
 
-          <div className="layout__right" data-windrag>
-            {OS === "windows" && (
+          <div className="layout__right">
+            {
               <div className="the-bar">
-                <LayoutControl />
+                <div
+                  className="the-dragbar"
+                  data-tauri-drag-region="true"
+                  style={{ width: "100%" }}
+                ></div>
+                {OS !== "macos" && <LayoutControl />}
               </div>
-            )}
+            }
 
             <TransitionGroup className="the-content">
               <CSSTransition
@@ -156,19 +176,7 @@ const Layout = () => {
                 timeout={300}
                 classNames="page"
               >
-                <Routes>
-                  {routers.map(({ label, link, ele: Ele }) => (
-                    <Route
-                      key={label}
-                      path={link}
-                      element={
-                        <BaseErrorBoundary key={label}>
-                          <Ele />
-                        </BaseErrorBoundary>
-                      }
-                    />
-                  ))}
-                </Routes>
+                {React.cloneElement(routersEles, { key: location.pathname })}
               </CSSTransition>
             </TransitionGroup>
           </div>

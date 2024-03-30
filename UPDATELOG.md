@@ -1,3 +1,96 @@
+## v1.5.11
+
+### Features
+
+- Meta(mihomo)内核更新 1.18.2
+
+### Bugs Fixes
+
+- 升级图标无法点击的问题
+- 卸载时检查安装目录是否为空
+- 代理界面图标重合的问题
+
+---
+
+## v1.5.10
+
+### Features
+
+- 优化 Linux 托盘菜单显示
+- 添加透明代理端口设置
+- 删除订阅前确认
+
+### Bugs Fixes
+
+- 删除 MacOS 程序坞图标
+- Windows 下 service 日志没有清理
+- MacOS 无法开启系统代理
+
+---
+
+## v1.5.9
+
+### Features
+
+- 缓存代理组图标
+- 使用`boa_engine` 代替 `rquickjs`
+- 支持 Linux armv7
+
+### Bugs Fixes
+
+- Windows 首次安装无法点击
+- Windows 触摸屏无法拖动
+- 规则列表 `REJECT-DROP` 颜色
+- MacOS Dock 栏不显示图标
+- MacOS 自定义字体无效
+- 避免使用空 UA 拉取订阅
+
+---
+
+## v1.5.8
+
+### Features
+
+- 优化 UI 细节
+- Linux 绘制窗口圆角
+- 开放 DevTools
+
+### Bugs Fixes
+
+- 修复 MacOS 下开启 Tun 内核崩溃的问题
+
+---
+
+## v1.5.7
+
+### Features
+
+- 优化 UI 各种细节
+- 提供菜单栏图标样式切换选项(单色/彩色/禁用)
+- 添加自动检查更新开关
+- MacOS 开启 Tun 模式自动修改 DNS
+- 调整可拖动区域(尝试修复触摸屏无法拖动的问题)
+
+---
+
+## v1.5.6
+
+### Features
+
+- 全新专属 Verge rev UI 界面 (by @Amnesiash) 及细节调整
+- 提供允许无效证书的开关
+- 删除不必要的快捷键
+- Provider 更新添加动画
+- Merge 支持 Provider
+- 更换订阅框的粘贴按钮，删除默认的"Remote File" Profile 名称
+- 链接菜单添加节点显示
+
+### Bugs Fixes
+
+- Linux 下图片显示错误
+
+---
+
 ## v1.5.4
 
 ### Features

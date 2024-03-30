@@ -42,6 +42,9 @@ pub struct IVerge {
     /// common tray icon
     pub common_tray_icon: Option<bool>,
 
+    /// menu icon
+    pub menu_icon: Option<String>,
+
     /// sysproxy tray icon
     pub sysproxy_tray_icon: Option<bool>,
 
@@ -90,6 +93,9 @@ pub struct IVerge {
     /// 切换代理时自动关闭连接
     pub auto_close_connection: Option<bool>,
 
+    /// 是否自动检查更新
+    pub auto_check_update: Option<bool>,
+
     /// 默认的延迟测试连接
     pub default_latency_test: Option<String>,
 
@@ -120,7 +126,13 @@ pub struct IVerge {
     /// 是否启用随机端口
     pub enable_random_port: Option<bool>,
 
-    /// verge mixed port 用于覆盖 clash 的 mixed port
+    /// verge 的各种 port 用于覆盖 clash 的各种 port
+    #[cfg(not(target_os = "windows"))]
+    pub verge_redir_port: Option<u16>,
+
+    #[cfg(target_os = "linux")]
+    pub verge_tproxy_port: Option<u16>,
+
     pub verge_mixed_port: Option<u16>,
 
     pub verge_socks_port: Option<u16>,
@@ -176,6 +188,7 @@ impl IVerge {
             traffic_graph: Some(true),
             enable_memory_usage: Some(true),
             enable_group_icon: Some(true),
+            menu_icon: Some("monochrome".into()),
             common_tray_icon: Some(false),
             sysproxy_tray_icon: Some(false),
             tun_tray_icon: Some(false),
@@ -183,12 +196,17 @@ impl IVerge {
             enable_silent_start: Some(false),
             enable_system_proxy: Some(false),
             enable_random_port: Some(false),
+            #[cfg(not(target_os = "windows"))]
+            verge_redir_port: Some(7895),
+            #[cfg(target_os = "linux")]
+            verge_tproxy_port: Some(7896),
             verge_mixed_port: Some(7897),
             verge_socks_port: Some(7898),
             verge_port: Some(7899),
             enable_proxy_guard: Some(false),
             proxy_guard_duration: Some(30),
             auto_close_connection: Some(true),
+            auto_check_update: Some(true),
             enable_builtin_enhanced: Some(true),
             auto_log_clean: Some(3),
             ..Self::default()
@@ -221,6 +239,7 @@ impl IVerge {
         patch!(traffic_graph);
         patch!(enable_memory_usage);
         patch!(enable_group_icon);
+        patch!(menu_icon);
         patch!(common_tray_icon);
         patch!(sysproxy_tray_icon);
         patch!(tun_tray_icon);
@@ -230,6 +249,10 @@ impl IVerge {
         patch!(enable_auto_launch);
         patch!(enable_silent_start);
         patch!(enable_random_port);
+        #[cfg(not(target_os = "windows"))]
+        patch!(verge_redir_port);
+        #[cfg(target_os = "linux")]
+        patch!(verge_tproxy_port);
         patch!(verge_mixed_port);
         patch!(verge_socks_port);
         patch!(verge_port);
@@ -244,6 +267,7 @@ impl IVerge {
         patch!(hotkeys);
 
         patch!(auto_close_connection);
+        patch!(auto_check_update);
         patch!(default_latency_test);
         patch!(default_latency_timeout);
         patch!(enable_builtin_enhanced);

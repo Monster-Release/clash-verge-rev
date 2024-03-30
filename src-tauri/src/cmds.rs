@@ -9,7 +9,7 @@ use anyhow::{Context, Result};
 use serde_yaml::Mapping;
 use std::collections::{HashMap, VecDeque};
 use sysproxy::Sysproxy;
-use tauri::api;
+use tauri::{api, Manager};
 type CmdResult<T = ()> = Result<T, String>;
 
 #[tauri::command]
@@ -276,6 +276,23 @@ pub fn get_app_dir() -> CmdResult<String> {
 }
 
 #[tauri::command]
+pub async fn download_icon_cache(url: String, name: String) -> CmdResult<String> {
+    let icon_cache_dir = wrap_err!(dirs::app_home_dir())?.join("icons").join("cache");
+    let icon_path = icon_cache_dir.join(name);
+    if !icon_cache_dir.exists() {
+        let _ = std::fs::create_dir_all(&icon_cache_dir);
+    }
+    if !icon_path.exists() {
+        let response = wrap_err!(reqwest::get(url).await)?;
+
+        let mut file = wrap_err!(std::fs::File::create(&icon_path))?;
+
+        let content = wrap_err!(response.bytes().await)?;
+        wrap_err!(std::io::copy(&mut content.as_ref(), &mut file))?;
+    }
+    Ok(icon_path.to_string_lossy().to_string())
+}
+#[tauri::command]
 pub fn copy_icon_file(path: String, name: String) -> CmdResult<String> {
     let file_path = std::path::Path::new(&path);
     let icon_dir = wrap_err!(dirs::app_home_dir())?.join("icons");
@@ -291,6 +308,17 @@ pub fn copy_icon_file(path: String, name: String) -> CmdResult<String> {
         }
     } else {
         return Err("file not found".to_string());
+    }
+}
+
+#[tauri::command]
+pub fn open_devtools(app_handle: tauri::AppHandle) {
+    if let Some(window) = app_handle.get_window("main") {
+        if !window.is_devtools_open() {
+            window.open_devtools();
+        } else {
+            window.close_devtools();
+        }
     }
 }
 

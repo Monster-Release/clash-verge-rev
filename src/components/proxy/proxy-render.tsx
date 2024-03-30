@@ -17,6 +17,11 @@ import { ProxyItem } from "./proxy-item";
 import { ProxyItemMini } from "./proxy-item-mini";
 import type { IRenderItem } from "./use-render-list";
 import { useVerge } from "@/hooks/use-verge";
+import { useRecoilState } from "recoil";
+import { atomThemeMode } from "@/services/states";
+import { useEffect, useState } from "react";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { downloadIconCache } from "@/services/cmds";
 
 interface RenderProps {
   item: IRenderItem;
@@ -33,20 +38,47 @@ export const ProxyRender = (props: RenderProps) => {
   const { type, group, headState, proxy, proxyCol } = item;
   const { verge } = useVerge();
   const enable_group_icon = verge?.enable_group_icon ?? true;
+  const [mode] = useRecoilState(atomThemeMode);
+  const isDark = mode === "light" ? false : true;
+  const itembackgroundcolor = isDark ? "#282A36" : "#ffffff";
+  const [iconCachePath, setIconCachePath] = useState("");
+
+  useEffect(() => {
+    initIconCachePath();
+  }, [group]);
+
+  async function initIconCachePath() {
+    if (group.icon && group.icon.trim().startsWith("http")) {
+      const fileName =
+        group.name.replaceAll(" ", "") + "-" + getFileName(group.icon);
+      const iconPath = await downloadIconCache(group.icon, fileName);
+      setIconCachePath(convertFileSrc(iconPath));
+    }
+  }
+
+  function getFileName(url: string) {
+    return url.substring(url.lastIndexOf("/") + 1);
+  }
 
   if (type === 0 && !group.hidden) {
     return (
       <ListItemButton
         dense
+        style={{
+          background: itembackgroundcolor,
+          height: "100%",
+          margin: "8px 8px",
+          borderRadius: "8px",
+        }}
         onClick={() => onHeadState(group.name, { open: !headState?.open })}
       >
         {enable_group_icon &&
           group.icon &&
           group.icon.trim().startsWith("http") && (
             <img
-              src={group.icon}
-              height="40px"
-              style={{ marginRight: "8px" }}
+              src={iconCachePath === "" ? group.icon : iconCachePath}
+              width="32px"
+              style={{ marginRight: "12px", borderRadius: "6px" }}
             />
           )}
         {enable_group_icon &&
@@ -54,8 +86,8 @@ export const ProxyRender = (props: RenderProps) => {
           group.icon.trim().startsWith("data") && (
             <img
               src={group.icon}
-              height="40px"
-              style={{ marginRight: "8px" }}
+              width="32px"
+              style={{ marginRight: "12px", borderRadius: "6px" }}
             />
           )}
         {enable_group_icon &&
@@ -63,11 +95,11 @@ export const ProxyRender = (props: RenderProps) => {
           group.icon.trim().startsWith("<svg") && (
             <img
               src={`data:image/svg+xml;base64,${btoa(group.icon)}`}
-              height="40px"
+              width="32px"
             />
           )}
         <ListItemText
-          primary={group.name}
+          primary={<StyledPrimary>{group.name}</StyledPrimary>}
           secondary={
             <ListItemTextChild
               sx={{
@@ -77,12 +109,16 @@ export const ProxyRender = (props: RenderProps) => {
                 pt: "2px",
               }}
             >
-              <StyledTypeBox>{group.type}</StyledTypeBox>
-              <StyledSubtitle>{group.now}</StyledSubtitle>
+              <Box sx={{ marginTop: "2px" }}>
+                <StyledTypeBox>{group.type}</StyledTypeBox>
+                <StyledSubtitle sx={{ color: "text.secondary" }}>
+                  {group.now}
+                </StyledSubtitle>
+              </Box>
             </ListItemTextChild>
           }
           secondaryTypographyProps={{
-            sx: { display: "flex", alignItems: "center" },
+            sx: { display: "flex", alignItems: "center", color: "#ccc" },
           }}
         />
         {headState?.open ? <ExpandLessRounded /> : <ExpandMoreRounded />}
@@ -93,7 +129,7 @@ export const ProxyRender = (props: RenderProps) => {
   if (type === 1 && !group.hidden) {
     return (
       <ProxyHead
-        sx={{ pl: indent ? 4.5 : 2.5, pr: 3, mt: indent ? 1 : 0.5, mb: 1 }}
+        sx={{ pl: 2, pr: 3, mt: indent ? 1 : 0.5, mb: 1 }}
         groupName={group.name}
         headState={headState!}
         onLocation={() => onLocation(group)}
@@ -110,7 +146,7 @@ export const ProxyRender = (props: RenderProps) => {
         proxy={proxy!}
         selected={group.now === proxy?.name}
         showType={headState?.showType}
-        sx={{ py: 0, pl: indent ? 4 : 2 }}
+        sx={{ py: 0, pl: 2 }}
         onClick={() => onChangeProxy(group, proxy!)}
       />
     );
@@ -121,7 +157,7 @@ export const ProxyRender = (props: RenderProps) => {
       <Box
         sx={{
           py: 2,
-          pl: indent ? 4.5 : 0,
+          pl: 0,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -141,7 +177,7 @@ export const ProxyRender = (props: RenderProps) => {
           height: 56,
           display: "grid",
           gap: 1,
-          pl: indent ? 4 : 2,
+          pl: 2,
           pr: 2,
           pb: 1,
           gridTemplateColumns: `repeat(${item.col! || 2}, 1fr)`,
@@ -164,9 +200,18 @@ export const ProxyRender = (props: RenderProps) => {
   return null;
 };
 
-const StyledSubtitle = styled("span")`
-  font-size: 0.8rem;
+const StyledPrimary = styled("span")`
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+const StyledSubtitle = styled("span")`
+  font-size: 13px;
+  overflow: hidden;
+  color: text.secondary;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
@@ -182,7 +227,7 @@ const StyledTypeBox = styled(ListItemTextChild)(({ theme }) => ({
   color: alpha(theme.palette.primary.main, 0.8),
   borderRadius: 4,
   fontSize: 10,
-  padding: "0 2px",
-  lineHeight: 1.25,
-  marginRight: "4px",
+  padding: "0 4px",
+  lineHeight: 1.5,
+  marginRight: "8px",
 }));

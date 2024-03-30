@@ -213,6 +213,10 @@ export async function getPortableFlag() {
   return invoke<boolean>("get_portable_flag");
 }
 
+export async function openDevTools() {
+  return invoke("open_devtools");
+}
+
 export async function exitApp() {
   return invoke("exit_app");
 }
@@ -222,4 +226,8 @@ export async function copyIconFile(
   name: "common.png" | "sysproxy.png" | "tun.png"
 ) {
   return invoke<void>("copy_icon_file", { path, name });
+}
+
+export async function downloadIconCache(url: string, name: string) {
+  return invoke<string>("download_icon_cache", { url, name });
 }

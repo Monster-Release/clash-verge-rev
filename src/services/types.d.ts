@@ -142,6 +142,8 @@ interface IClashInfo {
   // status: string;
   mixed_port?: number; // clash mixed port
   socks_port?: number; // clash socks port
+  redir_port?: number; // clash redir port
+  tproxy_port?: number; // clash tproxy port
   port?: number; // clash http port
   server?: string; // external-controller
   secret?: string;
@@ -202,6 +204,7 @@ interface IVergeConfig {
   traffic_graph?: boolean;
   enable_memory_usage?: boolean;
   enable_group_icon?: boolean;
+  menu_icon?: "monochrome" | "colorful" | "disable";
   common_tray_icon?: boolean;
   sysproxy_tray_icon?: boolean;
   tun_tray_icon?: boolean;
@@ -213,6 +216,8 @@ interface IVergeConfig {
   enable_random_port?: boolean;
   verge_mixed_port?: number;
   verge_socks_port?: number;
+  verge_redir_port?: number;
+  verge_tproxy_port?: number;
   verge_port?: number;
   enable_proxy_guard?: boolean;
   proxy_guard_duration?: number;
@@ -232,6 +237,7 @@ interface IVergeConfig {
     css_injection?: string;
   };
   auto_close_connection?: boolean;
+  auto_check_update?: boolean;
   default_latency_test?: string;
   default_latency_timeout?: number;
   enable_builtin_enhanced?: boolean;

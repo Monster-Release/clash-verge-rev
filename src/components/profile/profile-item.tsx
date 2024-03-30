@@ -23,6 +23,7 @@ import { Notice } from "@/components/base";
 import { EditorViewer } from "./editor-viewer";
 import { ProfileBox } from "./profile-box";
 import parseTraffic from "@/utils/parse-traffic";
+import { ConfirmViewer } from "./confirm-viewer";
 
 const round = keyframes`
   from { transform: rotate(0deg); }
@@ -57,6 +58,7 @@ export const ProfileItem = (props: Props) => {
 
   const { upload = 0, download = 0, total = 0 } = extra ?? {};
   const from = parseUrl(itemData.url);
+  const description = itemData.desc;
   const expire = parseExpire(extra?.expire);
   const progress = Math.round(((download + upload) * 100) / (total + 0.1));
 
@@ -91,6 +93,7 @@ export const ProfileItem = (props: Props) => {
   }, [hasUrl, updated]);
 
   const [fileOpen, setFileOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const onEditInfo = () => {
     setAnchorEl(null);
@@ -170,14 +173,26 @@ export const ProfileItem = (props: Props) => {
     { label: "Open File", handler: onOpenFile },
     { label: "Update", handler: () => onUpdate(0) },
     { label: "Update(Proxy)", handler: () => onUpdate(2) },
-    { label: "Delete", handler: onDelete },
+    {
+      label: "Delete",
+      handler: () => {
+        setAnchorEl(null);
+        setConfirmOpen(true);
+      },
+    },
   ];
   const fileModeMenu = [
     { label: "Select", handler: onForceSelect },
     { label: "Edit Info", handler: onEditInfo },
     { label: "Edit File", handler: onEditFile },
     { label: "Open File", handler: onOpenFile },
-    { label: "Delete", handler: onDelete },
+    {
+      label: "Delete",
+      handler: () => {
+        setAnchorEl(null);
+        setConfirmOpen(true);
+      },
+    },
   ];
 
   const boxStyle = {
@@ -230,11 +245,19 @@ export const ProfileItem = (props: Props) => {
               {...attributes}
               {...listeners}
             >
-              <DragIndicator sx={{ cursor: "move", marginLeft: "-6px" }} />
+              <DragIndicator
+                sx={[
+                  { cursor: "move", marginLeft: "-6px" },
+                  ({ palette: { text } }) => {
+                    return { color: text.primary };
+                  },
+                ]}
+              />
             </Box>
 
             <Typography
               width="calc(100% - 36px)"
+              sx={{ fontSize: "18px", fontWeight: "600", lineHeight: "26px" }}
               variant="h6"
               component="h2"
               noWrap
@@ -268,27 +291,36 @@ export const ProfileItem = (props: Props) => {
         </Box>
         {/* the second line show url's info or description */}
         <Box sx={boxStyle}>
-          {hasUrl ? (
+          {
             <>
-              <Typography noWrap title={`From: ${from}`}>
-                {from}
-              </Typography>
-
-              <Typography
-                noWrap
-                flex="1 0 auto"
-                fontSize={14}
-                textAlign="right"
-                title={`Updated Time: ${parseExpire(updated)}`}
-              >
-                {updated > 0 ? dayjs(updated * 1000).fromNow() : ""}
-              </Typography>
+              {description ? (
+                <Typography
+                  noWrap
+                  title={description}
+                  sx={{ fontSize: "14px" }}
+                >
+                  {description}
+                </Typography>
+              ) : (
+                hasUrl && (
+                  <Typography noWrap title={`From ${from}`}>
+                    {from}
+                  </Typography>
+                )
+              )}
+              {hasUrl && (
+                <Typography
+                  noWrap
+                  flex="1 0 auto"
+                  fontSize={14}
+                  textAlign="right"
+                  title={`Updated Time: ${parseExpire(updated)}`}
+                >
+                  {updated > 0 ? dayjs(updated * 1000).fromNow() : ""}
+                </Typography>
+              )}
             </>
-          ) : (
-            <Typography noWrap title={itemData.desc}>
-              {itemData.desc}
-            </Typography>
-          )}
+          }
         </Box>
         {/* the third line show extra info or last updated time */}
         {hasExtra ? (
@@ -299,15 +331,11 @@ export const ProfileItem = (props: Props) => {
             <span title="Expire Time">{expire}</span>
           </Box>
         ) : (
-          <Box sx={{ ...boxStyle, fontSize: 14, justifyContent: "flex-end" }}>
+          <Box sx={{ ...boxStyle, fontSize: 12, justifyContent: "flex-end" }}>
             <span title="Updated Time">{parseExpire(updated)}</span>
           </Box>
         )}
-        <LinearProgress
-          variant="determinate"
-          value={progress}
-          color="inherit"
-        />
+        <LinearProgress variant="determinate" value={progress} />
       </ProfileBox>
 
       <Menu
@@ -327,7 +355,19 @@ export const ProfileItem = (props: Props) => {
           <MenuItem
             key={item.label}
             onClick={item.handler}
-            sx={{ minWidth: 120 }}
+            sx={[
+              {
+                minWidth: 120,
+              },
+              (theme) => {
+                return {
+                  color:
+                    item.label === "Delete"
+                      ? theme.palette.error.main
+                      : undefined,
+                };
+              },
+            ]}
             dense
           >
             {t(item.label)}
@@ -340,6 +380,16 @@ export const ProfileItem = (props: Props) => {
         open={fileOpen}
         mode="yaml"
         onClose={() => setFileOpen(false)}
+      />
+      <ConfirmViewer
+        title="Confirm deletion"
+        message="This operation is not reversible"
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => {
+          onDelete();
+          setConfirmOpen(false);
+        }}
       />
     </Box>
   );
