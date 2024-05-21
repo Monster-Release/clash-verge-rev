@@ -23,14 +23,14 @@ A Clash Meta GUI based on <a href="https://github.com/tauri-apps/tauri">Tauri</a
 
 ## Install
 
-Download from [release](https://github.com/Monster-Release/clash-verge-rev/releases). Supports Windows (x64/x86), Linux (x64/arm64) and macOS 10.15+ (intel/apple).
+Download from [release](https://github.com/Monster-Releasereleases). Supports Windows (x64/x86), Linux (x64/arm64) and macOS 10.15+ (intel/apple).
 
-- [Windows x64](https://github.com/Monster-Release/clash-verge-rev/releases/download/v1.4.11/Clash.Verge_1.4.11_x64-setup.exe)
-- [Windows x86](https://github.com/Monster-Release/clash-verge-rev/releases/download/v1.4.11/Clash.Verge_1.4.11_x86-setup.exe)
-- [Windows arm64](https://github.com/Monster-Release/clash-verge-rev/releases/download/v1.4.11/Clash.Verge_1.4.11_arm64-setup.exe)
+- [Windows x64](https://github.com/Monster-Releasereleases/download/v1.4.11/Clash.Verge_1.4.11_x64-setup.exe)
+- [Windows x86](https://github.com/Monster-Releasereleases/download/v1.4.11/Clash.Verge_1.4.11_x86-setup.exe)
+- [Windows arm64](https://github.com/Monster-Releasereleases/download/v1.4.11/Clash.Verge_1.4.11_arm64-setup.exe)
 
-- [macOS intel](https://github.com/Monster-Release/clash-verge-rev/releases/download/v1.4.11/Clash.Verge_1.4.11_x64.dmg)
-- [macOS apple](https://github.com/Monster-Release/clash-verge-rev/releases/download/v1.4.11/Clash.Verge_1.4.11_aarch64.dmg)
+- [macOS intel](https://github.com/Monster-Releasereleases/download/v1.4.11/Clash.Verge_1.4.11_x64.dmg)
+- [macOS apple](https://github.com/Monster-Releasereleases/download/v1.4.11/Clash.Verge_1.4.11_aarch64.dmg)
 
 - [Linux x64 AppImage](https://github.com/Monster-Release/clash-verge-rev/releases/download/v1.4.11/clash-verge_1.4.11_amd64.AppImage)
 - [Linux x64 deb](https://github.com/Monster-Release/clash-verge-rev/releases/download/v1.4.11/clash-verge_1.4.11_amd64.deb)
