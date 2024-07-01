@@ -16,53 +16,12 @@ const SettingPage = () => {
     Notice.error(err?.message || err.toString());
   };
 
-  const toGithubRepo = useLockFn(() => {
-    return openWebUrl("https://github.com/clash-verge-rev/clash-verge-rev");
-  });
-
-  const toGithubDoc = useLockFn(() => {
-    return openWebUrl("https://clash-verge-rev.github.io/index.html");
-  });
-
-  const toTelegramChannel = useLockFn(() => {
-    return openWebUrl("https://t.me/clash_verge_re");
-  });
-
   const mode = useThemeMode();
   const isDark = mode === "light" ? false : true;
 
   return (
     <BasePage
       title={t("Settings")}
-      header={
-        <ButtonGroup variant="contained" aria-label="Basic button group">
-          <IconButton
-            size="medium"
-            color="inherit"
-            title={t("Manual")}
-            onClick={toGithubDoc}
-          >
-            <HelpOutlineSharp fontSize="inherit" />
-          </IconButton>
-          <IconButton
-            size="medium"
-            color="inherit"
-            title={t("TG Channel")}
-            onClick={toTelegramChannel}
-          >
-            <Telegram fontSize="inherit" />
-          </IconButton>
-
-          <IconButton
-            size="medium"
-            color="inherit"
-            title={t("Github Repo")}
-            onClick={toGithubRepo}
-          >
-            <GitHub fontSize="inherit" />
-          </IconButton>
-        </ButtonGroup>
-      }
     >
       <Grid container spacing={{ xs: 1.5, lg: 1.5 }}>
         <Grid item xs={12} md={6}>
