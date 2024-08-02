@@ -6,11 +6,18 @@ use crate::{
 };
 use crate::{ret_err, wrap_err};
 use anyhow::{Context, Result};
+use network_interface::NetworkInterface;
 use serde_yaml::Mapping;
 use std::collections::{HashMap, VecDeque};
 use sysproxy::{Autoproxy, Sysproxy};
 use tauri::{api, Manager};
 type CmdResult<T = ()> = Result<T, String>;
+
+#[tauri::command]
+pub fn copy_clash_env(app_handle: tauri::AppHandle) -> CmdResult {
+    feat::copy_clash_env(&app_handle);
+    Ok(())
+}
 
 #[tauri::command]
 pub fn get_profiles() -> CmdResult<IProfiles> {
@@ -323,6 +330,36 @@ pub fn copy_icon_file(path: String, name: String) -> CmdResult<String> {
 }
 
 #[tauri::command]
+pub fn get_network_interfaces() -> Vec<String> {
+    use sysinfo::Networks;
+    let mut result = Vec::new();
+    let networks = Networks::new_with_refreshed_list();
+    for (interface_name, _) in &networks {
+        result.push(interface_name.clone());
+    }
+    return result;
+}
+
+#[tauri::command]
+pub fn get_network_interfaces_info() -> CmdResult<Vec<NetworkInterface>> {
+    use network_interface::NetworkInterface;
+    use network_interface::NetworkInterfaceConfig;
+
+    let names = get_network_interfaces();
+    let interfaces = wrap_err!(NetworkInterface::show())?;
+
+    let mut result = Vec::new();
+
+    for interface in interfaces {
+        if names.contains(&interface.name) {
+            result.push(interface);
+        }
+    }
+
+    Ok(result)
+}
+
+#[tauri::command]
 pub fn open_devtools(app_handle: tauri::AppHandle) {
     if let Some(window) = app_handle.get_window("main") {
         if !window.is_devtools_open() {
@@ -352,13 +389,13 @@ pub mod service {
     }
 
     #[tauri::command]
-    pub async fn install_service() -> CmdResult {
-        wrap_err!(service::install_service().await)
+    pub async fn install_service(passwd: String) -> CmdResult {
+        wrap_err!(service::install_service(passwd).await)
     }
 
     #[tauri::command]
-    pub async fn uninstall_service() -> CmdResult {
-        wrap_err!(service::uninstall_service().await)
+    pub async fn uninstall_service(passwd: String) -> CmdResult {
+        wrap_err!(service::uninstall_service(passwd).await)
     }
 }
 

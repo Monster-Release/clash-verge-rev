@@ -2,6 +2,10 @@ import dayjs from "dayjs";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Notice } from "@/components/base";
 
+export async function copyClashEnv() {
+  return invoke<void>("copy_clash_env");
+}
+
 export async function getClashLogs() {
   const regex = /time="(.+?)"\s+level=(.+?)\s+msg="(.+?)"/;
   const newRegex = /(.+?)\s+(.+?)\s+(.+)/;
@@ -197,12 +201,12 @@ export async function checkService() {
   }
 }
 
-export async function installService() {
-  return invoke<void>("install_service");
+export async function installService(passwd: string) {
+  return invoke<void>("install_service", { passwd });
 }
 
-export async function uninstallService() {
-  return invoke<void>("uninstall_service");
+export async function uninstallService(passwd: string) {
+  return invoke<void>("uninstall_service", { passwd });
 }
 
 export async function invoke_uwp_tool() {
@@ -232,4 +236,12 @@ export async function copyIconFile(
 
 export async function downloadIconCache(url: string, name: string) {
   return invoke<string>("download_icon_cache", { url, name });
+}
+
+export async function getNetworkInterfaces() {
+  return invoke<string[]>("get_network_interfaces");
+}
+
+export async function getNetworkInterfacesInfo() {
+  return invoke<INetworkInterface[]>("get_network_interfaces_info");
 }

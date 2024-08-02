@@ -9,20 +9,18 @@ import {
 import { DeleteForeverRounded, UndoRounded } from "@mui/icons-material";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { downloadIconCache } from "@/services/cmds";
+import { convertFileSrc } from "@tauri-apps/api/tauri";
+import { useEffect, useState } from "react";
 interface Props {
   type: "prepend" | "original" | "delete" | "append";
-  ruleRaw: string;
+  group: IProxyGroupConfig;
   onDelete: () => void;
 }
 
-export const RuleItem = (props: Props) => {
-  let { type, ruleRaw, onDelete } = props;
+export const GroupItem = (props: Props) => {
+  let { type, group, onDelete } = props;
   const sortable = type === "prepend" || type === "append";
-  const rule = ruleRaw.replace(",no-resolve", "");
-
-  const ruleType = rule.match(/^[^,]+/)?.[0] ?? "";
-  const proxyPolicy = rule.match(/[^,]+$/)?.[0] ?? "";
-  const ruleContent = rule.slice(ruleType.length + 1, -proxyPolicy.length - 1);
 
   const {
     attributes,
@@ -32,7 +30,7 @@ export const RuleItem = (props: Props) => {
     transition,
     isDragging,
   } = sortable
-    ? useSortable({ id: ruleRaw })
+    ? useSortable({ id: group.name })
     : {
         attributes: {},
         listeners: {},
@@ -41,6 +39,26 @@ export const RuleItem = (props: Props) => {
         transition: null,
         isDragging: false,
       };
+
+  const [iconCachePath, setIconCachePath] = useState("");
+
+  useEffect(() => {
+    initIconCachePath();
+  }, [group]);
+
+  async function initIconCachePath() {
+    if (group.icon && group.icon.trim().startsWith("http")) {
+      const fileName =
+        group.name.replaceAll(" ", "") + "-" + getFileName(group.icon);
+      const iconPath = await downloadIconCache(group.icon, fileName);
+      setIconCachePath(convertFileSrc(iconPath));
+    }
+  }
+
+  function getFileName(url: string) {
+    return url.substring(url.lastIndexOf("/") + 1);
+  }
+
   return (
     <ListItem
       dense
@@ -62,6 +80,32 @@ export const RuleItem = (props: Props) => {
         zIndex: isDragging ? "calc(infinity)" : undefined,
       })}
     >
+      {group.icon && group.icon?.trim().startsWith("http") && (
+        <img
+          src={iconCachePath === "" ? group.icon : iconCachePath}
+          width="32px"
+          style={{
+            marginRight: "12px",
+            borderRadius: "6px",
+          }}
+        />
+      )}
+      {group.icon && group.icon?.trim().startsWith("data") && (
+        <img
+          src={group.icon}
+          width="32px"
+          style={{
+            marginRight: "12px",
+            borderRadius: "6px",
+          }}
+        />
+      )}
+      {group.icon && group.icon?.trim().startsWith("<svg") && (
+        <img
+          src={`data:image/svg+xml;base64,${btoa(group.icon ?? "")}`}
+          width="32px"
+        />
+      )}
       <ListItemText
         {...attributes}
         {...listeners}
@@ -69,28 +113,23 @@ export const RuleItem = (props: Props) => {
         sx={{ cursor: sortable ? "move" : "" }}
         primary={
           <StyledPrimary
-            title={ruleContent || "-"}
             sx={{ textDecoration: type === "delete" ? "line-through" : "" }}
           >
-            {ruleContent || "-"}
+            {group.name}
           </StyledPrimary>
         }
         secondary={
           <ListItemTextChild
             sx={{
-              width: "62%",
               overflow: "hidden",
               display: "flex",
-              justifyContent: "space-between",
+              alignItems: "center",
               pt: "2px",
             }}
           >
             <Box sx={{ marginTop: "2px" }}>
-              <StyledTypeBox>{ruleType}</StyledTypeBox>
+              <StyledTypeBox>{group.type}</StyledTypeBox>
             </Box>
-            <StyledSubtitle sx={{ color: "text.secondary" }}>
-              {proxyPolicy}
-            </StyledSubtitle>
           </ListItemTextChild>
         }
         secondaryTypographyProps={{
@@ -113,14 +152,6 @@ const StyledPrimary = styled("div")`
   font-weight: 700;
   line-height: 1.5;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const StyledSubtitle = styled("span")`
-  font-size: 13px;
-  overflow: hidden;
-  color: text.secondary;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;

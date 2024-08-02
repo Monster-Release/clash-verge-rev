@@ -51,6 +51,7 @@ fn main() -> std::io::Result<()> {
             cmds::open_web_url,
             cmds::open_core_dir,
             cmds::get_portable_flag,
+            cmds::get_network_interfaces,
             // cmds::kill_sidecar,
             cmds::restart_sidecar,
             // clash
@@ -63,6 +64,7 @@ fn main() -> std::io::Result<()> {
             cmds::get_runtime_exists,
             cmds::get_runtime_logs,
             cmds::uwp::invoke_uwp_tool,
+            cmds::copy_clash_env,
             // verge
             cmds::get_verge_config,
             cmds::patch_verge_config,
@@ -72,6 +74,7 @@ fn main() -> std::io::Result<()> {
             cmds::download_icon_cache,
             cmds::open_devtools,
             cmds::exit_app,
+            cmds::get_network_interfaces_info,
             // cmds::update_hotkeys,
             // profile
             cmds::get_profiles,
