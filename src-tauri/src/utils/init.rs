@@ -172,7 +172,6 @@ fn init_dns_config() -> Result<()> {
                 Value::String("*.arpa".into()),
                 Value::String("time.*.com".into()),
                 Value::String("ntp.*.com".into()),
-                Value::String("time.*.com".into()),
                 Value::String("+.market.xiaomi.com".into()),
                 Value::String("localhost.ptlogin2.qq.com".into()),
                 Value::String("*.msftncsi.com".into()),
