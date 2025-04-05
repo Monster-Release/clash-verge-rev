@@ -196,7 +196,7 @@ pub struct IVerge {
 
     /// 自动进入轻量模式的延迟（分钟）
     pub auto_light_weight_minutes: Option<u64>,
-    
+
     /// 服务状态跟踪
     pub service_state: Option<crate::core::service::ServiceState>,
 }
@@ -304,7 +304,7 @@ impl IVerge {
             enable_global_hotkey: Some(true),
             enable_auto_light_weight_mode: Some(false),
             auto_light_weight_minutes: Some(10),
-            enable_dns_settings: Some(true),
+            enable_dns_settings: Some(false),
             home_cards: None,
             service_state: None,
             ..Self::default()

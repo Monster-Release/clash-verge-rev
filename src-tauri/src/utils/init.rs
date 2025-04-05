@@ -157,13 +157,18 @@ fn init_dns_config() -> Result<()> {
         ),
         ("prefer-h3".into(), Value::Bool(false)),
         ("respect-rules".into(), Value::Bool(false)),
-        ("use-hosts".into(), Value::Bool(false)),
-        ("use-system-hosts".into(), Value::Bool(false)),
+        ("use-hosts".into(), Value::Bool(true)),
+        ("use-system-hosts".into(), Value::Bool(true)),
         (
             "fake-ip-filter".into(),
             Value::Sequence(vec![
                 Value::String("*.lan".into()),
                 Value::String("*.local".into()),
+                Value::String("*.localhost".into()),
+                Value::String("*.localdomain".into()),
+                Value::String("*.example".into()),
+                Value::String("*.invalid".into()),
+                Value::String("*.test".into()),
                 Value::String("*.arpa".into()),
                 Value::String("time.*.com".into()),
                 Value::String("ntp.*.com".into()),
@@ -177,35 +182,47 @@ fn init_dns_config() -> Result<()> {
         (
             "default-nameserver".into(),
             Value::Sequence(vec![
-                Value::String("223.6.6.6".into()),
+                Value::String("223.5.5.5".into()),
+                Value::String("119.29.29.29".into()),
                 Value::String("8.8.8.8".into()),
             ]),
         ),
         (
             "nameserver".into(),
             Value::Sequence(vec![
-                Value::String("8.8.8.8".into()),
+                Value::String("223.5.5.5".into()),
+                Value::String("119.29.29.29".into()),
+                Value::String("tls://223.5.5.5:853".into()),
+                Value::String("tls://1.12.12.12:853".into()),
                 Value::String("https://doh.pub/dns-query".into()),
                 Value::String("https://dns.alidns.com/dns-query".into()),
             ]),
         ),
-        (
-            "fallback".into(),
-            Value::Sequence(vec![
-                Value::String("https://dns.alidns.com/dns-query".into()),
-                Value::String("https://dns.google/dns-query".into()),
-                Value::String("https://cloudflare-dns.com/dns-query".into()),
-            ]),
-        ),
+        ("fallback".into(), Value::Sequence(vec![])),
         (
             "nameserver-policy".into(),
-            Value::Mapping(serde_yaml::Mapping::new()),
+            Value::Mapping(serde_yaml::Mapping::from_iter([
+                (
+                    "+.internal.crop.com".into(),
+                    Value::String("10.0.0.1".into()),
+                ),
+                (
+                    "geosite:private".into(),
+                    Value::String("114.114.114.114".into()),
+                ),
+                ("geosite:cn".into(), Value::String("114.114.114.114".into())),
+                (
+                    "geolocation-cn".into(),
+                    Value::String("114.114.114.114".into()),
+                ),
+            ])),
         ),
         (
             "proxy-server-nameserver".into(),
             Value::Sequence(vec![
                 Value::String("https://doh.pub/dns-query".into()),
                 Value::String("https://dns.alidns.com/dns-query".into()),
+                Value::String("tls://223.5.5.5".into()),
             ]),
         ),
         ("direct-nameserver".into(), Value::Sequence(vec![])),
@@ -228,6 +245,8 @@ fn init_dns_config() -> Result<()> {
                         Value::String("+.google.com".into()),
                         Value::String("+.facebook.com".into()),
                         Value::String("+.youtube.com".into()),
+                        Value::String("+.x.com".into()),
+                        Value::String("+.twitter.com".into()),
                     ]),
                 ),
             ])),

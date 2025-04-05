@@ -43,13 +43,17 @@ const DEFAULT_DNS_CONFIG = {
   "fake-ip-filter-mode": "blacklist" as "blacklist" | "whitelist",
   "prefer-h3": false,
   "respect-rules": false,
-  "use-hosts": false,
-  "use-system-hosts": false,
+  "use-hosts": true,
+  "use-system-hosts": true,
   "fake-ip-filter": [
     "*.lan",
     "*.local",
+    "*.localhost",
+    "*.localdomain",
+    "*.example",
+    "*.invalid",
+    "*.test",
     "*.arpa",
-    "time.*.com",
     "ntp.*.com",
     "time.*.com",
     "+.market.xiaomi.com",
@@ -57,21 +61,30 @@ const DEFAULT_DNS_CONFIG = {
     "*.msftncsi.com",
     "www.msftconnecttest.com",
   ],
-  "default-nameserver": ["223.6.6.6", "8.8.8.8"],
+  "default-nameserver": [
+    "223.5.5.5",
+    "119.29.29.29",
+    "8.8.8.8"
+  ],
   nameserver: [
-    "8.8.8.8",
+    "223.5.5.5",
+    "119.29.29.29",
+    "tls://223.5.5.5:853",
+    "tls://1.12.12.12:853",
     "https://doh.pub/dns-query",
-    "https://dns.alidns.com/dns-query",
+    "https://dns.alidns.com/dns-query"
   ],
-  fallback: [
-    "https://dns.alidns.com/dns-query",
-    "https://dns.google/dns-query",
-    "https://cloudflare-dns.com/dns-query",
-  ],
-  "nameserver-policy": {},
+  fallback: [],
+  "nameserver-policy": {
+    "+.internal.crop.com": "10.0.0.1",
+    "geosite:private": "114.114.114.114",
+    "geosite:cn": "114.114.114.114",
+    "geolocation-cn": "114.114.114.114",
+  },
   "proxy-server-nameserver": [
     "https://doh.pub/dns-query",
     "https://dns.alidns.com/dns-query",
+    "tls://223.5.5.5"
   ],
   "direct-nameserver": [],
   "direct-nameserver-follow-policy": false,
@@ -79,7 +92,7 @@ const DEFAULT_DNS_CONFIG = {
     geoip: true,
     "geoip-code": "CN",
     ipcidr: ["240.0.0.0/4", "0.0.0.0/32"],
-    domain: ["+.google.com", "+.facebook.com", "+.youtube.com"],
+    domain: ["+.google.com", "+.facebook.com", "+.youtube.com", "+.x.com", "+.twitter.com"],
   },
 };
 
@@ -98,12 +111,12 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
     fakeIpFilterMode: "blacklist" | "whitelist";
     preferH3: boolean;
     respectRules: boolean;
+    useHosts: boolean;
+    useSystemHosts: boolean;
     fakeIpFilter: string;
     nameserver: string;
     fallback: string;
     defaultNameserver: string;
-    useHosts: boolean;
-    useSystemHosts: boolean;
     proxyServerNameserver: string;
     directNameserver: string;
     directNameserverFollowPolicy: boolean;
@@ -120,12 +133,12 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
     fakeIpFilterMode: DEFAULT_DNS_CONFIG["fake-ip-filter-mode"],
     preferH3: DEFAULT_DNS_CONFIG["prefer-h3"],
     respectRules: DEFAULT_DNS_CONFIG["respect-rules"],
+    useHosts: DEFAULT_DNS_CONFIG["use-hosts"],
+    useSystemHosts: DEFAULT_DNS_CONFIG["use-system-hosts"],
     fakeIpFilter: DEFAULT_DNS_CONFIG["fake-ip-filter"].join(", "),
     defaultNameserver: DEFAULT_DNS_CONFIG["default-nameserver"].join(", "),
     nameserver: DEFAULT_DNS_CONFIG.nameserver.join(", "),
     fallback: DEFAULT_DNS_CONFIG.fallback.join(", "),
-    useHosts: DEFAULT_DNS_CONFIG["use-hosts"],
-    useSystemHosts: DEFAULT_DNS_CONFIG["use-system-hosts"],
     proxyServerNameserver:
       DEFAULT_DNS_CONFIG["proxy-server-nameserver"]?.join(", ") || "",
     directNameserver: DEFAULT_DNS_CONFIG["direct-nameserver"]?.join(", ") || "",
@@ -209,6 +222,9 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
       preferH3: config["prefer-h3"] ?? DEFAULT_DNS_CONFIG["prefer-h3"],
       respectRules:
         config["respect-rules"] ?? DEFAULT_DNS_CONFIG["respect-rules"],
+      useHosts: config["use-hosts"] ?? DEFAULT_DNS_CONFIG["use-hosts"],
+      useSystemHosts:
+        config["use-system-hosts"] ?? DEFAULT_DNS_CONFIG["use-system-hosts"],
       fakeIpFilter:
         config["fake-ip-filter"]?.join(", ") ??
         DEFAULT_DNS_CONFIG["fake-ip-filter"].join(", "),
@@ -220,9 +236,6 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
       defaultNameserver:
         config["default-nameserver"]?.join(", ") ??
         DEFAULT_DNS_CONFIG["default-nameserver"].join(", "),
-      useHosts: config["use-hosts"] ?? DEFAULT_DNS_CONFIG["use-hosts"],
-      useSystemHosts:
-        config["use-system-hosts"] ?? DEFAULT_DNS_CONFIG["use-system-hosts"],
       proxyServerNameserver:
         config["proxy-server-nameserver"]?.join(", ") ??
         (DEFAULT_DNS_CONFIG["proxy-server-nameserver"]?.join(", ") || ""),
@@ -259,12 +272,12 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
       fakeIpFilterMode: DEFAULT_DNS_CONFIG["fake-ip-filter-mode"],
       preferH3: DEFAULT_DNS_CONFIG["prefer-h3"],
       respectRules: DEFAULT_DNS_CONFIG["respect-rules"],
+      useHosts: DEFAULT_DNS_CONFIG["use-hosts"],
+      useSystemHosts: DEFAULT_DNS_CONFIG["use-system-hosts"],
       fakeIpFilter: DEFAULT_DNS_CONFIG["fake-ip-filter"].join(", "),
       defaultNameserver: DEFAULT_DNS_CONFIG["default-nameserver"].join(", "),
       nameserver: DEFAULT_DNS_CONFIG.nameserver.join(", "),
       fallback: DEFAULT_DNS_CONFIG.fallback.join(", "),
-      useHosts: DEFAULT_DNS_CONFIG["use-hosts"],
-      useSystemHosts: DEFAULT_DNS_CONFIG["use-system-hosts"],
       proxyServerNameserver:
         DEFAULT_DNS_CONFIG["proxy-server-nameserver"]?.join(", ") || "",
       directNameserver:
@@ -330,6 +343,10 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
         preferH3: dnsConfig["prefer-h3"] ?? DEFAULT_DNS_CONFIG["prefer-h3"],
         respectRules:
           dnsConfig["respect-rules"] ?? DEFAULT_DNS_CONFIG["respect-rules"],
+        useHosts: dnsConfig["use-hosts"] ?? DEFAULT_DNS_CONFIG["use-hosts"],
+        useSystemHosts:
+          dnsConfig["use-system-hosts"] ??
+          DEFAULT_DNS_CONFIG["use-system-hosts"],
         fakeIpFilter:
           dnsConfig["fake-ip-filter"]?.join(", ") ??
           DEFAULT_DNS_CONFIG["fake-ip-filter"].join(", "),
@@ -342,10 +359,6 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
         fallback:
           dnsConfig.fallback?.join(", ") ??
           DEFAULT_DNS_CONFIG.fallback.join(", "),
-        useHosts: dnsConfig["use-hosts"] ?? DEFAULT_DNS_CONFIG["use-hosts"],
-        useSystemHosts:
-          dnsConfig["use-system-hosts"] ??
-          DEFAULT_DNS_CONFIG["use-system-hosts"],
         proxyServerNameserver:
           dnsConfig["proxy-server-nameserver"]?.join(", ") ??
           (DEFAULT_DNS_CONFIG["proxy-server-nameserver"]?.join(", ") || ""),
@@ -458,12 +471,12 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
       "fake-ip-filter-mode": values.fakeIpFilterMode,
       "prefer-h3": values.preferH3,
       "respect-rules": values.respectRules,
+      "use-hosts": values.useHosts,
+      "use-system-hosts": values.useSystemHosts,
       "fake-ip-filter": parseList(values.fakeIpFilter),
       "default-nameserver": parseList(values.defaultNameserver),
       nameserver: parseList(values.nameserver),
-      fallback: parseList(values.fallback),
-      "use-hosts": values.useHosts,
-      "use-system-hosts": values.useSystemHosts,
+      "direct-nameserver-follow-policy": values.directNameserverFollowPolicy,
       "fallback-filter": {
         geoip: values.fallbackGeoip,
         "geoip-code": values.fallbackGeoipCode,
@@ -472,13 +485,16 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
       },
     };
 
-    // 只在有nameserverPolicy时添加
+    // 只在有值时添加其他可选字段
+    if (values.fallback) {
+      dnsConfig["fallback"] = parseList(values.fallback);
+    }
+
     const policy = parseNameserverPolicy(values.nameserverPolicy);
     if (Object.keys(policy).length > 0) {
       dnsConfig["nameserver-policy"] = policy;
     }
 
-    // 只在有值时添加其他可选字段
     if (values.proxyServerNameserver) {
       dnsConfig["proxy-server-nameserver"] = parseList(
         values.proxyServerNameserver,
@@ -488,9 +504,6 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
     if (values.directNameserver) {
       dnsConfig["direct-nameserver"] = parseList(values.directNameserver);
     }
-
-    dnsConfig["direct-nameserver-follow-policy"] =
-      values.directNameserverFollowPolicy;
 
     return dnsConfig;
   };
@@ -576,7 +589,7 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
       open={open}
       title={
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          {t("DNS Settings")}
+          {t("DNS Overwrite")}
           <Box display="flex" alignItems="center" gap={1}>
             <Button
               variant="outlined"
@@ -755,7 +768,7 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
               size="small"
               value={values.defaultNameserver}
               onChange={handleChange("defaultNameserver")}
-              placeholder="223.6.6.6, 8.8.8.8"
+              placeholder="system,223.6.6.6, 8.8.8.8"
             />
           </Item>
 
