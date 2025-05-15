@@ -164,8 +164,12 @@ fn init_dns_config() -> Result<()> {
             Value::Sequence(vec![
                 Value::String("*.lan".into()),
                 Value::String("*.local".into()),
+                Value::String("*.localhost".into()),
+                Value::String("*.localdomain".into()),
+                Value::String("*.example".into()),
+                Value::String("*.invalid".into()),
+                Value::String("*.test".into()),
                 Value::String("*.arpa".into()),
-                Value::String("time.*.com".into()),
                 Value::String("ntp.*.com".into()),
                 Value::String("time.*.com".into()),
                 Value::String("+.market.xiaomi.com".into()),
