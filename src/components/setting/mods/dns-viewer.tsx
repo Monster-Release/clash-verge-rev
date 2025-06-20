@@ -44,14 +44,18 @@ const DEFAULT_DNS_CONFIG = {
   "fake-ip-filter-mode": "blacklist" as "blacklist" | "whitelist",
   "prefer-h3": false,
   "respect-rules": false,
-  "use-hosts": false,
-  "use-system-hosts": false,
+  "use-hosts": true,
+  "use-system-hosts": true,
   ipv6: true,
   "fake-ip-filter": [
     "*.lan",
     "*.local",
+    "*.localhost",
+    "*.localdomain",
+    "*.example",
+    "*.invalid",
+    "*.test",
     "*.arpa",
-    "time.*.com",
     "ntp.*.com",
     "time.*.com",
     "+.market.xiaomi.com",
@@ -61,18 +65,27 @@ const DEFAULT_DNS_CONFIG = {
   ],
   "default-nameserver": [
     "system",
-    "223.6.6.6",
+    "223.5.5.5",
+    "119.29.29.29",
     "8.8.8.8",
     "2400:3200::1",
-    "2001:4860:4860::8888",
+    "2001:4860:4860::8888"
   ],
   nameserver: [
-    "8.8.8.8",
+    "223.5.5.5",
+    "119.29.29.29",
+    "tls://223.5.5.5:853",
+    "tls://1.12.12.12:853",
     "https://doh.pub/dns-query",
-    "https://dns.alidns.com/dns-query",
+    "https://dns.alidns.com/dns-query"
   ],
   fallback: [],
-  "nameserver-policy": {},
+  "nameserver-policy": {
+    "+.internal.crop.com": "10.0.0.1",
+    "geosite:private": "223.5.5.5",
+    "geosite:cn": "223.5.5.5",
+    "geolocation-cn": "223.5.5.5",
+  },
   "proxy-server-nameserver": [
     "https://doh.pub/dns-query",
     "https://dns.alidns.com/dns-query",
@@ -84,7 +97,7 @@ const DEFAULT_DNS_CONFIG = {
     geoip: true,
     "geoip-code": "CN",
     ipcidr: ["240.0.0.0/4", "0.0.0.0/32"],
-    domain: ["+.google.com", "+.facebook.com", "+.youtube.com"],
+    domain: ["+.google.com", "+.facebook.com", "+.youtube.com", "+.x.com", "+.twitter.com"],
   },
 };
 
@@ -821,7 +834,7 @@ export const DnsViewer = forwardRef<DialogRef>((props, ref) => {
               size="small"
               value={values.defaultNameserver}
               onChange={handleChange("defaultNameserver")}
-              placeholder="system,223.6.6.6, 8.8.8.8, 2400:3200::1, 2001:4860:4860::8888"
+              placeholder="system,223.5.5.5, 8.8.8.8, 2400:3200::1, 2001:4860:4860::8888"
             />
           </Item>
 

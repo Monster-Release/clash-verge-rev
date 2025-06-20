@@ -242,11 +242,6 @@ export const HomePage = () => {
     navigate("/settings");
   };
 
-  // 文档链接函数
-  const toGithubDoc = useLockFn(() => {
-    return openWebUrl("https://clash-verge-rev.github.io/index.html");
-  });
-
   // 新增：打开设置弹窗
   const openSettings = () => {
     setSettingsOpen(true);
@@ -274,11 +269,6 @@ export const HomePage = () => {
               color="inherit"
             >
               <HistoryEduOutlined />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={t("Manual")} arrow>
-            <IconButton onClick={toGithubDoc} size="small" color="inherit">
-              <HelpOutlineRounded />
             </IconButton>
           </Tooltip>
           <Tooltip title={t("Home Settings")} arrow>
